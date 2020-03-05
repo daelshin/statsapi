@@ -2,10 +2,13 @@
   "name": "statsapp",
   "version": "1.0.0",
   "description": "app to handle stats in mongodb",
-  "scripts":{
-  	"start": "node stats.js"
+  "scripts": {
+    "start": "node stats.js"
   },
   "main": "stats.js",
   "author": "Daniil",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0"
+  }
 }
