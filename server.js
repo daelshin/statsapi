@@ -1,18 +1,15 @@
 //  OpenShift sample Node application
 var express = require('express'),
     app     = express(),
-    morgan  = require('morgan'),
-    bodyParser = require('body-parser');
-
+    morgan  = require('morgan');
+    
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
-app.use(morgan('combined'));
-app.use(bodyParser.json());
-
+app.use(morgan('combined'))
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
-    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '127.0.0.1',
+    ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
     mongoURLLabel = "";
 
@@ -56,16 +53,11 @@ var db = null,
     dbDetails = new Object();
 
 var initDb = function(callback) {
-  console.log("Mongo DB URL: " + mongoURL);
-  if(mongoURL == null)
-    mongoURL = "mongodb://localhost:27017/mydb";
+  if (mongoURL == null) return;
 
-  //if (mongoURL == null) return;
-
-  var mongodb = require('mongodb').MongoClient;
+  var mongodb = require('mongodb');
   if (mongodb == null) return;
 
-  console.log("TRY To Connect");
   mongodb.connect(mongoURL, function(err, conn) {
     if (err) {
       callback(err);
@@ -84,14 +76,11 @@ var initDb = function(callback) {
 app.get('/', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
-  console.log("ENTERED");
   if (!db) {
     initDb(function(err){});
   }
   if (db) {
-    console.log("DB");
-    var dbo = db.db("mydb");
-    var col = dbo.collection('counts');
+    var col = db.collection('counts');
     // Create a document with request IP and current time of request
     col.insert({ip: req.ip, date: Date.now()});
     col.count(function(err, count){
@@ -101,7 +90,6 @@ app.get('/', function (req, res) {
       res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
     });
   } else {
-    console.log("NO DB");
     res.render('index.html', { pageCountMessage : null});
   }
 });
@@ -113,35 +101,12 @@ app.get('/pagecount', function (req, res) {
     initDb(function(err){});
   }
   if (db) {
-    var dbo = db.db("mydb");
-    dbo.collection('counts').count(function(err, count ){
+    db.collection('counts').count(function(err, count ){
       res.send('{ pageCount: ' + count + '}');
     });
   } else {
     res.send('{ pageCount: -1 }');
   }
-});
-
-app.get('/infoGET', function(req, res){
-  var requestProps = {
-    query: req.query,
-    baseUrl: req.baseUrl,
-    path: req.path,
-    originalUrl: req.originalUrl,
-    hostname: req.hostname
-  };
-  res.send(JSON.stringify(requestProps));
-});
-app.post('/infoPOST', function(req, res){
-  var requestProps = {
-    query: req.query,
-    baseUrl: req.baseUrl,
-    path: req.path,
-    originalUrl: req.originalUrl,
-    hostname: req.hostname,
-    body: req.body
-  };
-  res.send(JSON.stringify(requestProps));
 });
 
 // error handling
