@@ -108,7 +108,27 @@ app.get('/pagecount', function (req, res) {
     res.send('{ pageCount: -1 }');
   }
 });
-
+app.get('/infoGET', function(req, res){
+  var requestProps = {
+    query: req.query,
+    baseUrl: req.baseUrl,
+    path: req.path,
+    originalUrl: req.originalUrl,
+    hostname: req.hostname
+  };
+  res.send(JSON.stringify(requestProps));
+});
+app.post('/infoPOST', function(req, res){
+  var requestProps = {
+    query: req.query,
+    baseUrl: req.baseUrl,
+    path: req.path,
+    originalUrl: req.originalUrl,
+    hostname: req.hostname,
+    body: req.body
+  };
+  res.send(JSON.stringify(requestProps));
+});
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
