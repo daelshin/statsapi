@@ -1,6 +1,6 @@
 {
   "name": "nodejs-ex",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Node.js sample app for OpenShift 3",
   "main": "server.js",
   "dependencies": {
@@ -21,14 +21,9 @@
     "start": "node server.js",
     "test": "IP=0.0.0.0 PORT=3030 mocha --timeout 5000 tests/*_test.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "http://github.com/sclorg/nodejs-ex.git"
-  },
-  "author": "Steve Speicher <sspeiche@gmail.com>",
+  "author": "Daniil <daniil.elshin@lafargeholcim.com>",
   "license": "CC-BY-1.0",
   "bugs": {
     "url": "http://github.com/sclorg/nodejs-ex/issues"
-  },
-  "homepage": "http://github.com/sclorg/nodejs-ex"
+  }
 }
