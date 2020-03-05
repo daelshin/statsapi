@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-ex",
+  "name": "statsapi",
   "version": "0.0.2",
-  "description": "Node.js sample app for OpenShift 3",
+  "description": "API for stadistics of portals",
   "main": "server.js",
   "dependencies": {
     "chai": "^3.5.0",

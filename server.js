@@ -53,9 +53,14 @@ var db = null,
     dbDetails = new Object();
 
 var initDb = function(callback) {
+  console.log("initDB");
+  if(mongoURL == null)
+    console.log("mongoURL is null");
   if (mongoURL == null) return;
 
   var mongodb = require('mongodb');
+  if(mongodb == null)
+    console.log("no mongodb");
   if (mongodb == null) return;
 
   mongodb.connect(mongoURL, function(err, conn) {
