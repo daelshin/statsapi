@@ -53,7 +53,7 @@ var db = null,
     dbDetails = new Object();
 
 var initDb = function(callback) {
-  console.log("initDB");
+  console.log("initDB on: " + mongoURL);
   if(mongoURL == null)
     console.log("mongoURL is null");
   if (mongoURL == null) return;
@@ -103,7 +103,9 @@ app.get('/pagecount', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
   if (!db) {
-    initDb(function(err){});
+    initDb(function(err){
+      console.log(err);
+    });
   }
   if (db) {
     db.collection('counts').count(function(err, count ){
