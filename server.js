@@ -137,7 +137,7 @@ app.post('/infoPOST', function(req, res){
   };
   res.send(JSON.stringify(requestProps));
 });
-
+/*
 app.post('/senduserdata', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
@@ -174,7 +174,7 @@ app.post('/getuserdata', function (req, res) {
   } else {
     res.send(JSON.stringify{error: "no database"});
   }
-});
+});/**/
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
