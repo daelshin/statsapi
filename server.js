@@ -137,6 +137,44 @@ app.post('/infoPOST', function(req, res){
   };
   res.send(JSON.stringify(requestProps));
 });
+
+app.post('/senduserdata', function (req, res) {
+  // try to initialize the db on every request if it's not already
+  // initialized.
+  var rBody = req.body;
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    var col = db.collection('users');
+    // Create a document with request IP and current time of request
+    col.insert({user_mail: rBody.user_mail, date: Date.now()});
+    res.send(JSON.stringify{success: "saved"});
+  } else {
+    res.send(JSON.stringify{error: "no database"});
+  }
+});
+app.post('/getuserdata', function (req, res) {
+  // try to initialize the db on every request if it's not already
+  // initialized.
+  var rBody = req.body;
+  if (!db) {
+    initDb(function(err){});
+  }
+  if (db) {
+    var col = db.collection('users');
+    // Create a document with request IP and current time of request
+    var query = { user_mail: req.body.user_mail };
+    col.find(query).toArray(function(err, result) {
+      if (err) throw err;
+      res.send(JSON.stringify{result: result});
+      db.close();
+    });
+    
+  } else {
+    res.send(JSON.stringify{error: "no database"});
+  }
+});
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
