@@ -127,6 +127,7 @@ app.get('/infoGET', function(req, res){
   res.send(JSON.stringify(requestProps));
 });
 app.post('/infoPOST', function(req, res){
+  console.log(req.body);
   var requestProps = {
     query: req.query,
     baseUrl: req.baseUrl,
