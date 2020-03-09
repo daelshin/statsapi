@@ -7,6 +7,8 @@ Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -181,8 +183,6 @@ app.post('/getuserdata', function (req, res) {
 });/**/
 
 
-// Parse JSON bodies (as sent by API clients)
-app.use(express.json());
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
