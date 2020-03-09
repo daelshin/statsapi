@@ -126,6 +126,8 @@ app.get('/infoGET', function(req, res){
   };
   res.send(JSON.stringify(requestProps));
 });
+
+
 app.post('/infoPOST', function(req, res){
   console.log(req.body);
   var requestProps = {
@@ -177,10 +179,14 @@ app.post('/getuserdata', function (req, res) {
     res.send(JSON.stringify({error: "no database"}));
   }
 });/**/
+
+
+// Parse JSON bodies (as sent by API clients)
+app.use(express.json());
 // error handling
 app.use(function(err, req, res, next){
   console.error(err.stack);
-  res.status(500).send('Something bad happened!');
+  res.status(500).send('Something bad happened: ' + err);
 });
 
 initDb(function(err){
