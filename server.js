@@ -154,6 +154,7 @@ app.post('/senduserdata', function (req, res) {
     res.send(JSON.stringify{error: "no database"});
   }
 });
+/**/
 app.post('/getuserdata', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
