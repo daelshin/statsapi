@@ -11,7 +11,6 @@ app.use(morgan('combined'));
 app.use(express.json());
 
 var js_connection = require('./js/connection');
-console.log(js_connection.foo());
 
 
 
