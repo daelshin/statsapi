@@ -38,35 +38,66 @@ if (mongoURL == null) {
     }
     // Provide UI label that excludes user id and pw
     mongoURLLabel += mongoHost + ':' + mongoPort + '/' + mongoDatabase;
-    mongoURL += mongoHost + ':' +  mongoPort + '/' + mongoDatabase;
+    mongoURL += mongoHost + ':' +  mongoPort;// + '/' + mongoDatabase;
   }
 }
-var db = null,
-    dbDetails = new Object();
-
-
+var dbDetails = new Object();
+var collectionIs = "logs";
+var testDataBaseName = "mydb";
 
 
 module.exports = {
   foo: function () {
     return "test";
   },
+
   port: port,
   ip: ip,
+  dbDetails: dbDetails,
+
   initDb: function(callback) {
-	  console.log("initDB on: " + mongoURL);
-	  if(mongoURL == null){
-	    console.log("mongoURL is null");
-	    mongoURL = "mongodb://localhost:27017/mydb";
-	  }
-	  if (mongoURL == null) return;
+  	console.log("initDB on: " + mongoURL);
+	if(mongoURL == null){
+		console.log("mongoURL is null");
+		mongoURL = "mongodb://localhost:27017/";
+	}
+	if (mongoURL == null) return;
+	if(mongoDatabase == null){
+		console.log("No mongo database defined");
+		mongoDatabase = testDataBaseName;
+	}
 
-	  var mongodb = require('mongodb');
-	  if(mongodb == null)
-	    console.log("no mongodb");
-	  if (mongodb == null) return;
+	var MongoClient = require('mongodb').MongoClient;
 
-	  mongodb.connect(mongoURL, { useUnifiedTopology: true}, function(err, conn) {
+	if(MongoClient == null)
+		console.log("no mongodb");
+	if (MongoClient == null) return;
+
+	MongoClient.connect(mongoURL, { useUnifiedTopology: true}, function(err, db) {
+		if (err) {
+			callback(err);
+			return;
+		}
+
+		var dbo = db.db(mongoDatabase);
+		dbo.createCollection(collectionIs, function(err, res) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			console.log("Collection created!");
+			db.close();
+		});
+
+		dbDetails.mongoURL = mongoURL;
+		dbDetails.db = db;
+		dbDetails.databaseName = db.databaseName;
+	    dbDetails.url = mongoURLLabel;
+	    dbDetails.type = 'MongoDB';
+	    dbDetails.collection = collectionIs;
+	}.bind(this));
+
+	/*  mongodb.connect(mongoURL, { useUnifiedTopology: true}, function(err, conn) {
 	    if (err) {
 	      callback(err);
 	      return;
@@ -78,6 +109,6 @@ module.exports = {
 	    dbDetails.type = 'MongoDB';
 
 	    console.log('Connected to MongoDB at: %s', mongoURL);
-	  });
+	  });/**/
 	}
 };

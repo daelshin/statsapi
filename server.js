@@ -16,24 +16,7 @@ console.log(js_connection.foo());
 
 
 app.get('/', function (req, res) {
-  // try to initialize the db on every request if it's not already
-  // initialized.
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('counts');
-    // Create a document with request IP and current time of request
-    col.insert({ip: req.ip, date: Date.now()});
-    col.count(function(err, count){
-      if (err) {
-        console.log('Error running count. Message:\n'+err);
-      }
-      res.render('index.html', { pageCountMessage : count, dbInfo: dbDetails });
-    });
-  } else {
-    res.render('index.html', { pageCountMessage : null});
-  }
+  res.render('index.html', { pageCountMessage : null});
 });
 
 app.get('/pagecount', function (req, res) {
@@ -78,42 +61,61 @@ app.post('/infoPOST', function(req, res){
 });
 
 app.post('/senduserdata', function (req, res) {
+
   // try to initialize the db on every request if it's not already
   // initialized.
   var rBody = req.body;
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('users');
-    // Create a document with request IP and current time of request
-    col.insert({user_mail: rBody.user_mail, date: Date.now()});
-    res.send(JSON.stringify({success: "saved"}));
-  } else {
-    res.send(JSON.stringify({error: "no database"}));
-  }
+  
+  var MongoClient = require('mongodb').MongoClient;
+
+  MongoClient.connect(js_connection.dbDetails.mongoURL, { useUnifiedTopology: true}, function(err, db) {
+    if (err) {
+      res.send(JSON.stringify({error: err}));
+      return;
+    }
+    var dbo = db.db(js_connection.dbDetails.databaseName);
+    var myobj = rBody.date = Date.now();
+    var myobj = rBody;
+    dbo.collection(js_connection.dbDetails.collection).insertOne(myobj, function(err, result) {
+      //console.log(err);
+      //console.log(result.insertedId);
+      if (err){
+        res.send(JSON.stringify({error: err}));
+      }
+      res.send(JSON.stringify({success: "saved", insertedId: result.insertedId}));
+      db.close();
+    });
+  });
 });
 /**/
 app.post('/getuserdata', function (req, res) {
   // try to initialize the db on every request if it's not already
   // initialized.
   var rBody = req.body;
-  if (!db) {
-    initDb(function(err){});
-  }
-  if (db) {
-    var col = db.collection('users');
-    // Create a document with request IP and current time of request
-    var query = { user_mail: req.body.user_mail };
-    col.find(query).toArray(function(err, result) {
-      if (err) throw err;
-      res.send(JSON.stringify({result: result}));
+
+  var MongoClient = require('mongodb').MongoClient;
+
+  MongoClient.connect(js_connection.dbDetails.mongoURL, { useUnifiedTopology: true}, function(err, db) {
+    if (err) {
+      res.send(JSON.stringify({error: err}));
+      return;
+    }
+    var dbo = db.db(js_connection.dbDetails.databaseName);
+    var myobj = rBody.date = Date.now();
+    var myobj = rBody;
+
+    var query = { user_mail: rBody.user_mail };
+    if(!rBody.user_mail)
+      query = {};
+    dbo.collection(js_connection.dbDetails.collection).find(query).toArray(function(err, result) {
+      if (err) {
+        res.send(JSON.stringify({error: err}));
+        return;
+      }
+      res.send(JSON.stringify({success: "exist data", data: result}));
       db.close();
     });
-    
-  } else {
-    res.send(JSON.stringify({error: "no database"}));
-  }
+  });
 });/**/
 
 
