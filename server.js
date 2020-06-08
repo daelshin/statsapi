@@ -12,6 +12,9 @@ app.use(express.json());
 
 var js_connection = require('./js/connection');
 
+const https = require('https');
+
+
 
 
 app.get('/', function (req, res) {
@@ -117,6 +120,65 @@ app.post('/getuserdata', function (req, res) {
   });
 });/**/
 
+
+app.post('/sendnotifications', function(req, res){
+  var request = require('request');
+  var rBody = req.body;
+  if(rBody === undefined){
+    res.send(JSON.stringify({error: "no body defined"}));
+    return;
+  }
+  else{
+    if(rBody.registration_ids === undefined){
+      res.send(JSON.stringify({error: "no registration_ids defined"}));
+      return;
+    }
+  }
+  /*var bodyIs = {
+    "registration_ids" : ["e0IDk62qIJ0:APA91bFfZgZU8r2D0wUndHkq9xyPSph4wZEuZvTMb9EnN5-7nsN_YyaFyXCyVxbfSt-7EOqowFQA_gpIZKWazEsbwNlgZDdgGwX6FlWrmKO-jHNtvEQP0GvboJC0LaaEtNtLEFEoY6m6"
+    ],
+    "notification":{
+    "title":"Titulo de la notificacion99",
+    "body":"Cuerpo de la notificacion"
+    }
+    };
+  /**/
+
+  request({
+      url: "https://fcm.googleapis.com/fcm/send",
+      method: "POST",
+      json: true,   // <--Very important!!!
+      body: rBody,
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "key=AAAAdAqItFU:APA91bHak_5h03RGE3ogF_Xa7--SJmL7YBfCJs7MnDH2dpIo4jJ3UENkx_X__WU0l56DNb24fv4lihHJTSsHoSLpLN_DOCxcw_Sxso-toSU7XsSiaTid2vVnKeNMpFS93MjeAYTgvEGc"
+      }
+  }, function (error, response, body){
+      if(error){
+        res.send(JSON.stringify({response: error}));
+      }
+      else
+        res.send(JSON.stringify({response: body}));
+  });
+});
+
+/*
+app.post('/sendnotifications', function (req, res) {
+  var $ = require("jquery");
+
+  var settings = {
+    "url": "https://fcm.googleapis.com/fcm/send",
+    "method": "POST",
+    "timeout": 0,
+    "headers": {
+      "Content-Type": "text/plain",
+      "Authorization": "key=AAAAdAqItFU:APA91bHak_5h03RGE3ogF_Xa7--SJmL7YBfCJs7MnDH2dpIo4jJ3UENkx_X__WU0l56DNb24fv4lihHJTSsHoSLpLN_DOCxcw_Sxso-toSU7XsSiaTid2vVnKeNMpFS93MjeAYTgvEGc"
+    },
+    "data": "\r\n{\r\n\"registration_ids\" : [\"e0IDk62qIJ0:APA91bFfZgZU8r2D0wUndHkq9xyPSph4wZEuZvTMb9EnN5-7nsN_YyaFyXCyVxbfSt-7EOqowFQA_gpIZKWazEsbwNlgZDdgGwX6FlWrmKO-jHNtvEQP0GvboJC0LaaEtNtLEFEoY6m6\"\r\n],\r\n\"notification\":{\r\n\"title\":\"Titulo de la notificacion99\",\r\n\"body\":\"Cuerpo de la notificacion\"\r\n}\r\n}",
+  };
+
+  
+});/**/
 
 // error handling
 app.use(function(err, req, res, next){
